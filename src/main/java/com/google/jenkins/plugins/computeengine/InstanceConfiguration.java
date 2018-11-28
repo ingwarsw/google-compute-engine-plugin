@@ -26,7 +26,6 @@ import hudson.RelativePath;
 import hudson.Util;
 import hudson.model.*;
 import hudson.model.labels.LabelAtom;
-import hudson.slaves.CloudRetentionStrategy;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
@@ -266,6 +265,8 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                     targetRemoteFs = "./.jenkins-slave";
                 }
             }
+            
+            boolean oneShot = retentionTimeMinutes == 0;
             ComputeEngineInstance instance = new ComputeEngineInstance(
                     cloud.name,
                     i.getName(),
@@ -279,8 +280,9 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                     mode, 
                     requiredLabel == null ? "" : requiredLabel.getName(),
                     launcher,
-                    new CloudRetentionStrategy(retentionTimeMinutes), 
-                    getLaunchTimeoutMillis());
+                    new ComputeEngineRetentionStrategy(retentionTimeMinutes, oneShot),
+                    getLaunchTimeoutMillis(),
+                    oneShot);
             return instance;
         } catch (Descriptor.FormException fe) {
             logger.printf("Error provisioning instance: %s", fe.getMessage());

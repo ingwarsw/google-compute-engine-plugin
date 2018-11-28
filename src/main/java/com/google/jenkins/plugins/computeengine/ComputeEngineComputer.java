@@ -17,12 +17,15 @@
 package com.google.jenkins.plugins.computeengine;
 
 import com.google.api.services.compute.model.Instance;
+import hudson.model.Executor;
+import hudson.model.Queue;
 import hudson.slaves.AbstractCloudComputer;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineInstance> {
 
@@ -114,6 +117,38 @@ public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineIn
     @Override
     public HttpResponse doDoDelete() throws IOException {
         checkPermission(DELETE);
+        terminate();
+        return new HttpRedirect("..");
+    }
+
+    @Override
+    public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
+        super.taskCompleted(executor, task, durationMS);
+        done(executor);
+    }
+
+    @Override
+    public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
+        super.taskCompletedWithProblems(executor, task, durationMS, problems);
+        done(executor);
+    }
+
+    private void done(Executor executor) {
+        ComputeEngineInstance node = getNode();
+        if (node.oneShot) {
+            setAcceptingTasks(false);
+            recordTermination();
+            threadPoolForRemoting.submit(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    terminate();
+                    return null;
+                }
+            });
+        }
+    }
+
+    private void terminate() throws IOException {
         ComputeEngineInstance node = getNode();
         if (node != null) {
             try {
@@ -122,6 +157,5 @@ public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineIn
                 //TODO: log
             }
         }
-        return new HttpRedirect("..");
     }
 }

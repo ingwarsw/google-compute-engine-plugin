@@ -16,7 +16,6 @@
 
 package com.google.jenkins.plugins.computeengine;
 
-import com.google.api.services.compute.model.Instance;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.Node;
@@ -28,15 +27,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.logging.Logger;
 
-public class ComputeEngineInstance extends AbstractCloudSlave {
+public class ComputeEngineInstance extends AbstractCloudSlave implements EphemeralNode {
     private static final Logger LOGGER = Logger.getLogger(ComputeEngineInstance.class.getName());
     public final String zone;
     public final String cloudName;
     public final String sshUser;
     public final String windowsUsername;
     public final String windowsPassword;
-    public Integer launchTimeout; // Seconds
-    private Boolean connected;
+    public final Integer launchTimeout; // Seconds
+    public final boolean oneShot;
+    public boolean connected;
 
     public ComputeEngineInstance(String cloudName,
                                  String name,
@@ -47,11 +47,12 @@ public class ComputeEngineInstance extends AbstractCloudSlave {
                                  String windowsUsername,
                                  String windowsPassword,
                                  int numExecutors,
-                                 Node.Mode mode,
+                                 Mode mode,
                                  String labelString,
                                  ComputerLauncher launcher,
                                  RetentionStrategy retentionStrategy,
-                                 Integer launchTimeout)
+                                 Integer launchTimeout,
+                                 boolean oneShot)
             throws Descriptor.FormException,
             IOException {
         super(name, nodeDescription, remoteFS, numExecutors, mode, labelString, launcher, retentionStrategy, Collections.<NodeProperty<?>>emptyList());
@@ -61,6 +62,7 @@ public class ComputeEngineInstance extends AbstractCloudSlave {
         this.sshUser = sshUser;
         this.windowsUsername = windowsUsername;
         this.windowsPassword = windowsPassword;
+        this.oneShot = oneShot;
     }
 
     @Override
@@ -100,6 +102,11 @@ public class ComputeEngineInstance extends AbstractCloudSlave {
         if (cloud == null)
             throw new CloudNotFoundException(String.format("Could not find cloud %s in Jenkins configuration", cloudName));
         return cloud;
+    }
+
+    @Override
+    public Node asNode() {
+        return this;
     }
 
     @Extension
