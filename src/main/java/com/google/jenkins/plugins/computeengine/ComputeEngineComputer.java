@@ -23,10 +23,8 @@ import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineInstance> {
-    private static final Logger LOGGER = Logger.getLogger(ComputeEngineComputer.class.getName());
     private volatile Instance instance;
 
     public ComputeEngineComputer(ComputeEngineInstance slave) {

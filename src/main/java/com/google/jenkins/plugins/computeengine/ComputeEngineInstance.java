@@ -104,10 +104,6 @@ public class ComputeEngineInstance extends AbstractCloudSlave {
         return cloud;
     }
 
-    public Node asNode() {
-        return this;
-    }
-
     @Extension
     public static final class DescriptorImpl extends SlaveDescriptor {
         @Override
