@@ -19,16 +19,21 @@ package com.google.jenkins.plugins.computeengine;
 import com.google.api.services.compute.model.Instance;
 import hudson.model.Executor;
 import hudson.model.Queue;
+import hudson.model.Slave;
 import hudson.slaves.AbstractCloudComputer;
+import hudson.util.StreamTaskListener;
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.Callable;
+import java.util.logging.Logger;
 
 public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineInstance> {
-
+    private static final Logger LOGGER = Logger.getLogger(ComputeEngineComputer.class.getName());
     private volatile Instance instance;
 
     public ComputeEngineComputer(ComputeEngineInstance slave) {
@@ -124,27 +129,34 @@ public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineIn
     @Override
     public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
         super.taskCompleted(executor, task, durationMS);
-        done(executor);
+//        checkOneShot();
     }
 
     @Override
     public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
         super.taskCompletedWithProblems(executor, task, durationMS, problems);
-        done(executor);
+//        checkOneShot();
     }
 
-    private void done(Executor executor) {
-        ComputeEngineInstance node = getNode();
-        if (node.oneShot) {
+    private void checkOneShot() {
+        final ComputeEngineInstance node = getNode();
+        if (node != null && node.oneShot) {
+            LOGGER.info("Terminating one shot node " + node.getNodeName());
             setAcceptingTasks(false);
-            recordTermination();
-            threadPoolForRemoting.submit(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    terminate();
-                    return null;
-                }
-            });
+            try {
+                Jenkins.get().removeNode(node);
+//                terminate();
+            } catch (Exception e) {
+                LOGGER.info("Terminating exception " + e.getMessage());
+            }
+                
+//            threadPoolForRemoting.submit(new Callable<Object>() {
+//                @Override
+//                public Object call() throws Exception {
+//                    terminate();
+//                    return null;
+//                }
+//            });
         }
     }
 

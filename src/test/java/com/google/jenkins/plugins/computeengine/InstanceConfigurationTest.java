@@ -135,6 +135,8 @@ public class InstanceConfigurationTest {
         assert (zones.size() == 2);
         assert (zones.get(1).getName().equals(ZONE));
         assert (zones.get(1).getSelfLink().equals(ZONE));
+        
+
     }
 
     @Test

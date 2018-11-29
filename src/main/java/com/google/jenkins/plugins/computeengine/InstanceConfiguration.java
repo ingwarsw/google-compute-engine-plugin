@@ -26,10 +26,12 @@ import hudson.RelativePath;
 import hudson.Util;
 import hudson.model.*;
 import hudson.model.labels.LabelAtom;
+import hudson.slaves.CloudRetentionStrategy;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import org.apache.commons.text.RandomStringGenerator;
+import org.jenkinsci.plugins.durabletask.executors.OnceRetentionStrategy;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -266,7 +268,8 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                 }
             }
             
-            boolean oneShot = retentionTimeMinutes == 0;
+            boolean oneShot = true;
+            
             ComputeEngineInstance instance = new ComputeEngineInstance(
                     cloud.name,
                     i.getName(),
@@ -280,7 +283,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                     mode, 
                     requiredLabel == null ? "" : requiredLabel.getName(),
                     launcher,
-                    new ComputeEngineRetentionStrategy(retentionTimeMinutes, oneShot),
+                    (oneShot ? new OnceRetentionStrategy(retentionTimeMinutes) : new CloudRetentionStrategy(retentionTimeMinutes)),
                     getLaunchTimeoutMillis(),
                     oneShot);
             return instance;

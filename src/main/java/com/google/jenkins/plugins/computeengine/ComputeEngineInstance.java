@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.logging.Logger;
 
-public class ComputeEngineInstance extends AbstractCloudSlave implements EphemeralNode {
+public class ComputeEngineInstance extends AbstractCloudSlave {
     private static final Logger LOGGER = Logger.getLogger(ComputeEngineInstance.class.getName());
     public final String zone;
     public final String cloudName;
@@ -104,7 +104,6 @@ public class ComputeEngineInstance extends AbstractCloudSlave implements Ephemer
         return cloud;
     }
 
-    @Override
     public Node asNode() {
         return this;
     }
