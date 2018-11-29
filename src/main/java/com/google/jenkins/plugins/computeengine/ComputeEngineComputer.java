@@ -17,19 +17,12 @@
 package com.google.jenkins.plugins.computeengine;
 
 import com.google.api.services.compute.model.Instance;
-import hudson.model.Executor;
-import hudson.model.Queue;
-import hudson.model.Slave;
 import hudson.slaves.AbstractCloudComputer;
-import hudson.util.StreamTaskListener;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineInstance> {
@@ -122,45 +115,6 @@ public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineIn
     @Override
     public HttpResponse doDoDelete() throws IOException {
         checkPermission(DELETE);
-        terminate();
-        return new HttpRedirect("..");
-    }
-
-    @Override
-    public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
-        super.taskCompleted(executor, task, durationMS);
-//        checkOneShot();
-    }
-
-    @Override
-    public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
-        super.taskCompletedWithProblems(executor, task, durationMS, problems);
-//        checkOneShot();
-    }
-
-    private void checkOneShot() {
-        final ComputeEngineInstance node = getNode();
-        if (node != null && node.oneShot) {
-            LOGGER.info("Terminating one shot node " + node.getNodeName());
-            setAcceptingTasks(false);
-            try {
-                Jenkins.get().removeNode(node);
-//                terminate();
-            } catch (Exception e) {
-                LOGGER.info("Terminating exception " + e.getMessage());
-            }
-                
-//            threadPoolForRemoting.submit(new Callable<Object>() {
-//                @Override
-//                public Object call() throws Exception {
-//                    terminate();
-//                    return null;
-//                }
-//            });
-        }
-    }
-
-    private void terminate() throws IOException {
         ComputeEngineInstance node = getNode();
         if (node != null) {
             try {
@@ -169,5 +123,6 @@ public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineIn
                 //TODO: log
             }
         }
+        return new HttpRedirect("..");
     }
 }
