@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -451,7 +452,7 @@ public class ComputeClient {
             if (elapsed >= timeout) {
                 throw new InterruptedException("Timed out waiting for operation to complete");
             }
-            LOGGER.info("Waiting for operation " + operationId + " to complete..");
+            LOGGER.log(Level.FINE, "Waiting for operation " + operationId + " to complete..");
             if (zone != null) {
                 Compute.ZoneOperations.Get get = compute.zoneOperations().get(projectId, zone, operationId);
                 operation = get.execute();
