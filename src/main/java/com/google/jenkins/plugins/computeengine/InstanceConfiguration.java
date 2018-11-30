@@ -94,6 +94,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
     public final String remoteFs;
     public final Integer localSsdDisks;
     public final boolean oneShot;
+    public final String googleLabelsString;
     public Map<String, String> googleLabels;
     public Integer numExecutors;
     public Integer retentionTimeMinutes;
@@ -183,6 +184,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         this.labels = Util.fixNull(labelString);
         this.runAsUser = runAsUser;
 
+        this.googleLabelsString = googleLabelsString;
         if (notNullOrEmpty(googleLabelsString)) {
 			for (String i: googleLabelsString.split(" ")) {
 				String[] keyValue = i.split(":");
