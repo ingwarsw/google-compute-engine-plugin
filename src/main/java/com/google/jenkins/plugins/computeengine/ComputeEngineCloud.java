@@ -178,7 +178,7 @@ public class ComputeEngineCloud extends AbstractCloudImpl {
                             if (c != null) {
                                 c.connect(false).get(config.getLaunchTimeoutMillis(), TimeUnit.MILLISECONDS);
                                 LOGGER.log(Level.INFO, String.format("%dms elapsed waiting for node %s to connect", System.currentTimeMillis() - startTime, node.getNodeName()));
-                                return node;
+                                return null;
                             } else {
                                 LOGGER.log(Level.INFO, String.format("No computer for node %s found", node.getNodeName()));
                             }

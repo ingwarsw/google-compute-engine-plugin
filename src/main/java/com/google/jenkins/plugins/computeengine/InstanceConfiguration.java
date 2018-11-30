@@ -92,6 +92,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
     public final String windowsPassword;
     public final String remoteFs;
     public final Integer localSsdDisks;
+    public final boolean oneShot;
     public Map<String, String> googleLabels;
     public Integer numExecutors;
     public Integer retentionTimeMinutes;
@@ -130,7 +131,8 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                                  String launchTimeoutSecondsStr,
                                  Node.Mode mode,
                                  AcceleratorConfiguration acceleratorConfiguration,
-                                 String runAsUser) {
+                                 String runAsUser,
+                                 boolean oneShot) {
         this.namePrefix = namePrefix;
         this.region = region;
         this.zone = zone;
@@ -142,6 +144,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         this.windowsUsername = windowsUsername;
         this.windowsPassword = windowsPassword;
         this.numExecutors = intOrDefault(numExecutorsStr, DEFAULT_NUM_EXECUTORS);
+        this.oneShot = oneShot;
         this.numExecutorsStr = numExecutors.toString();
         this.retentionTimeMinutes = intOrDefault(retentionTimeMinutesStr, DEFAULT_RETENTION_TIME_MINUTES);
         this.retentionTimeMinutesStr = retentionTimeMinutes.toString();
@@ -275,8 +278,6 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                     targetRemoteFs = "./.jenkins-slave";
                 }
             }
-            
-            boolean oneShot = true;
             
             ComputeEngineInstance instance = new ComputeEngineInstance(
                     cloud.name,
