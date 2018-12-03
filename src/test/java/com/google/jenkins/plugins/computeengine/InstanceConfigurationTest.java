@@ -44,7 +44,6 @@ public class InstanceConfigurationTest {
     public static final String ZONE = "us-west1-a";
     public static final String LABEL = "LABEL1 LABEL2";
     public static final String A_LABEL = "LABEL1";
-    public static final String GOOGLELABEL = "component:google";
     public static final String MACHINE_TYPE = "n1-standard-1";
     public static final String STARTUP_SCRIPT = "#!/bin/bash";
     public static final String NUM_EXECUTORS = "1";
@@ -221,7 +220,6 @@ public class InstanceConfigurationTest {
                 PREEMPTIBLE,
                 minCpuPlatform,
                 LABEL,
-                GOOGLELABEL,
                 CONFIG_DESC,
                 BOOT_DISK_TYPE,
                 BOOT_DISK_AUTODELETE,

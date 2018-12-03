@@ -113,7 +113,6 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                                  boolean preemptible,
                                  String minCpuPlatform,
                                  String labelString,
-                                 String googleLabelsString,
                                  String description,
                                  String bootDiskType,
                                  boolean bootDiskAutoDelete,
@@ -183,14 +182,6 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         this.mode = mode;
         this.labels = Util.fixNull(labelString);
         this.runAsUser = runAsUser;
-
-        this.googleLabelsString = googleLabelsString;
-        if (notNullOrEmpty(googleLabelsString)) {
-			for (String i: googleLabelsString.split(" ")) {
-				String[] keyValue = i.split(":");
-				appendLabel(keyValue[0], keyValue.length>1 ? keyValue[1] : "true");
-			}
-		}
 
         readResolve();
     }
