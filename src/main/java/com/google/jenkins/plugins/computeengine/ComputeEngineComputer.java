@@ -25,6 +25,7 @@ import org.kohsuke.stapler.HttpResponse;
 import java.io.IOException;
 
 public class ComputeEngineComputer extends AbstractCloudComputer<ComputeEngineInstance> {
+
     private volatile Instance instance;
 
     public ComputeEngineComputer(ComputeEngineInstance slave) {
