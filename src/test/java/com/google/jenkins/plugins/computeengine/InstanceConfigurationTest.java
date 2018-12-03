@@ -242,8 +242,9 @@ public class InstanceConfigurationTest {
                 LAUNCH_TIMEOUT_SECONDS_STR,
                 NODE_MODE,
                 new AcceleratorConfiguration(ACCELERATOR_NAME, ACCELERATOR_COUNT),
-                RUN_AS_USER,
-                false);
+                RUN_AS_USER, 
+                false,
+                null);
     }
 
     @Test

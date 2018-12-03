@@ -269,7 +269,8 @@ public class ComputeEngineCloudIT {
                 NODE_MODE,
                 new AcceleratorConfiguration(ACCELERATOR_NAME, ACCELERATOR_COUNT),
                 RUN_AS_USER,
-                false);
+                false,
+                null);
                 ic.appendLabels(INTEGRATION_LABEL);
         return ic;
     }
@@ -312,7 +313,8 @@ public class ComputeEngineCloudIT {
                 NODE_MODE,
                 new AcceleratorConfiguration(ACCELERATOR_NAME, ACCELERATOR_COUNT),
                 RUN_AS_USER,
-                false);
+                false,
+                null);
         ic.appendLabels(INTEGRATION_LABEL);
         return ic;
     }

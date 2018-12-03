@@ -95,6 +95,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
     public final Integer localSsdDisks;
     public final boolean oneShot;
     public final String googleLabelsString;
+    public final String template;
     public Map<String, String> googleLabels;
     public Integer numExecutors;
     public Integer retentionTimeMinutes;
@@ -135,7 +136,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
                                  Node.Mode mode,
                                  AcceleratorConfiguration acceleratorConfiguration,
                                  String runAsUser,
-                                 boolean oneShot) {
+                                 boolean oneShot, String template) {
         this.namePrefix = namePrefix;
         this.region = region;
         this.zone = zone;
@@ -149,6 +150,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         this.minCpuPlatform = minCpuPlatform;
         this.numExecutors = intOrDefault(numExecutorsStr, DEFAULT_NUM_EXECUTORS);
         this.oneShot = oneShot;
+        this.template = template;
         this.numExecutorsStr = numExecutors.toString();
         this.retentionTimeMinutes = intOrDefault(retentionTimeMinutesStr, DEFAULT_RETENTION_TIME_MINUTES);
         this.retentionTimeMinutesStr = retentionTimeMinutes.toString();
@@ -268,7 +270,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         PrintStream logger = listener.getLogger();
         try {
             Instance i = instance();
-            Operation operation = cloud.client.insertInstance(cloud.projectId, i);
+            Operation operation = cloud.client.insertInstance(cloud.projectId, template, i);
             logger.println("Sent insert request");
             String targetRemoteFs = this.remoteFs;
             ComputeEngineComputerLauncher launcher = null;
@@ -576,6 +578,26 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
             } catch (IOException ioe) {
                 items.clear();
                 items.add("Error retrieving regions");
+                return items;
+            }
+        }
+        
+        public ListBoxModel doFillTemplateItems(@AncestorInPath Jenkins context,
+                                              @QueryParameter("projectId") @RelativePath("..") final String projectId,
+                                              @QueryParameter("credentialsId") @RelativePath("..") final String credentialsId) {
+            ListBoxModel items = new ListBoxModel();
+            items.add("");
+            try {
+                ComputeClient compute = computeClient(context, credentialsId);
+                List<InstanceTemplate> instanceTemplates = compute.getTemplates(projectId);
+
+                for (InstanceTemplate instanceTemplate : instanceTemplates) {
+                    items.add(instanceTemplate.getName(), instanceTemplate.getSelfLink());
+                }
+                return items;
+            } catch (IOException ioe) {
+                items.clear();
+                items.add("Error retrieving instanceTemplates");
                 return items;
             }
         }
