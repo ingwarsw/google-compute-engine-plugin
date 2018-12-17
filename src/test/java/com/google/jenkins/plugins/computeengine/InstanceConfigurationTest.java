@@ -162,7 +162,7 @@ public class InstanceConfigurationTest {
     }
 
     @Test
-    public void testInstanceModel() {
+    public void testInstanceModel() throws Exception {
         Instance i = instanceConfiguration(MIN_CPU_PLATFORM).instance();
         // General
         assert (i.getName().startsWith(NAME_PREFIX));
