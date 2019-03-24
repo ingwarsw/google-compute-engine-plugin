@@ -271,7 +271,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         PrintStream logger = listener.getLogger();
         try {
             Instance i = instance();
-            Operation operation = cloud.client.insertInstance(cloud.projectId, template, i);
+            Operation operation = cloud.getClient().insertInstance(cloud.projectId, template, i);
             logger.println("Sent insert request");
             String targetRemoteFs = this.remoteFs;
             ComputeEngineComputerLauncher launcher = null;
@@ -327,7 +327,7 @@ public class InstanceConfiguration implements Describable<InstanceConfiguration>
         i.setZone(ComputeClient.zoneFromSelfLink(zone));
         
         if (StringUtils.isNotBlank(template)) {
-            InstanceTemplate instanceTemplate = cloud.client.getTemplate(ComputeClient.lastParam(cloud.projectId), ComputeClient.lastParam(template));
+            InstanceTemplate instanceTemplate = cloud.getClient().getTemplate(ComputeClient.lastParam(cloud.projectId), ComputeClient.lastParam(template));
             Map<String, String> templateLabels = instanceTemplate.getProperties().getLabels();
             Map<String, String> mergedLabels = new HashMap<>(templateLabels);
             mergedLabels.putAll(googleLabels);

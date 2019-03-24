@@ -75,7 +75,8 @@ public class ComputeEngineCloud extends AbstractCloudImpl {
     public final String projectId;
     public final String credentialsId;
     public final List<InstanceConfiguration> configurations;
-    protected transient ComputeClient client;
+    
+    private transient ComputeClient client;
 
     @DataBoundConstructor
     public ComputeEngineCloud(
@@ -87,7 +88,7 @@ public class ComputeEngineCloud extends AbstractCloudImpl {
         super(createCloudId(cloudName), instanceCapStr);
 
         if (configurations == null) {
-            this.configurations = new ArrayList<InstanceConfiguration>();
+            this.configurations = new ArrayList<>();
         } else {
             this.configurations = configurations;
         }
@@ -127,15 +128,8 @@ public class ComputeEngineCloud extends AbstractCloudImpl {
     }
 
     protected Object readResolve() {
-        try {
-            ClientFactory clientFactory = new ClientFactory(Jenkins.getInstance(), new ArrayList<DomainRequirement>(),
-                    credentialsId);
-            this.client = clientFactory.compute();
-        } catch (IOException e) {
-            this.client = null;
-            //TODO: log
-        }
-
+        this.client = createClient();
+        
         for (InstanceConfiguration c : configurations) {
             c.cloud = this;
             // Apply a label that associates an instance configuration with
@@ -151,6 +145,16 @@ public class ComputeEngineCloud extends AbstractCloudImpl {
     public String getInstanceUniqueId() {
         // Semi unique ID
         return String.valueOf(name.hashCode());
+    }
+    
+    private ComputeClient createClient() {
+        try {
+            ClientFactory clientFactory = new ClientFactory(Jenkins.getInstance(), new ArrayList<>(),
+                    credentialsId);
+            return clientFactory.compute();
+        } catch (IOException e) {
+            return null;
+        }
     }
     
     public ComputeClient getClient() {

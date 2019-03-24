@@ -182,7 +182,7 @@ public class ComputeEngineCloudIT {
     @Test //TODO: Group client tests into their own test class
     public void testGetImage() throws Exception {
         ComputeEngineCloud cloud = (ComputeEngineCloud) r.jenkins.clouds.get(0);
-        Image i = cloud.client.getImage("debian-cloud", "debian-9-stretch-v20180820");
+        Image i = cloud.getClient().getImage("debian-cloud", "debian-9-stretch-v20180820");
         assertNotNull(i);
     }
 
@@ -205,7 +205,7 @@ public class ComputeEngineCloudIT {
         // There should be no warning logs
         assertEquals(logs(), false, logs().contains("WARNING"));
 
-        Instance i = cloud.client.getInstance(projectId, ZONE, name);
+        Instance i = cloud.getClient().getInstance(projectId, ZONE, name);
 
         // The created instance should have 3 labels
         assertEquals(logs(),3, i.getLabels().size());
