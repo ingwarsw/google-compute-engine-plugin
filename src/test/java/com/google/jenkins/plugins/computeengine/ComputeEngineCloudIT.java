@@ -24,6 +24,7 @@ import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.google.api.services.compute.model.Image;
 import com.google.api.services.compute.model.Instance;
 import com.google.api.services.compute.model.Operation;
+import com.google.common.collect.ImmutableMap;
 import com.google.jenkins.plugins.computeengine.client.ClientFactory;
 import com.google.jenkins.plugins.computeengine.client.ComputeClient;
 import com.google.jenkins.plugins.credentials.oauth.GoogleRobotPrivateKeyCredentials;
@@ -63,7 +64,7 @@ public class ComputeEngineCloudIT {
     private static final String ZONE = "us-west1-a";
     private static final String ZONE_BASE = format("projects/%s/zones/" + ZONE);
 	private static final String LABEL = "integration";
-	private static final String GOOGLELABEL = "component:integration";
+	private static final String GOOGLELABEL = "component:integration integration:delete";
     private static final String MACHINE_TYPE = ZONE_BASE + "/machineTypes/n1-standard-1";
     private static final String NUM_EXECUTORS = "1";
     private static final boolean PREEMPTIBLE = false;
@@ -80,12 +81,9 @@ public class ComputeEngineCloudIT {
     private static final String ACCELERATOR_COUNT = "";
     private static final String RUN_AS_USER = "jenkins";
 
-    private static Map<String, String> INTEGRATION_LABEL;
-
-    static {
-        INTEGRATION_LABEL = new HashMap<String, String>();
-        INTEGRATION_LABEL.put("integration", "delete");
-    }
+    private static Map<String, String> INTEGRATION_LABEL = ImmutableMap.of(
+            "integration", "delete"
+    );
 
     private static final String NETWORK_NAME = format("projects/%s/global/networks/default");
     private static final String SUBNETWORK_NAME = "default";
@@ -271,7 +269,6 @@ public class ComputeEngineCloudIT {
                 RUN_AS_USER,
                 false,
                 null);
-                ic.appendLabels(INTEGRATION_LABEL);
         return ic;
     }
 
@@ -315,7 +312,6 @@ public class ComputeEngineCloudIT {
                 RUN_AS_USER,
                 false,
                 null);
-        ic.appendLabels(INTEGRATION_LABEL);
         return ic;
     }
 

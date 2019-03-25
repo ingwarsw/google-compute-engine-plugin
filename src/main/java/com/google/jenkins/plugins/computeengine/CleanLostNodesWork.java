@@ -17,6 +17,7 @@
 package com.google.jenkins.plugins.computeengine;
 
 import com.google.api.services.compute.model.Instance;
+import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.PeriodicWork;
 import hudson.model.Slave;
@@ -24,7 +25,6 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.Symbol;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +51,6 @@ public class CleanLostNodesWork extends PeriodicWork {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void doRun() {
         logger.log(Level.FINEST, "Starting clean lost nodes worker");
@@ -98,8 +97,7 @@ public class CleanLostNodesWork extends PeriodicWork {
     }
 
     private List<Instance> findRemoteInstances(ComputeEngineCloud cloud) {
-        Map<String, String> filterLabel = new HashMap<>();
-        filterLabel.put(CLOUD_ID_LABEL_KEY, cloud.getInstanceUniqueId());
+        Map<String, String> filterLabel = ImmutableMap.of(CLOUD_ID_LABEL_KEY, cloud.getInstanceUniqueId());
         try {
             return cloud.getClient()
                     .getInstancesWithLabel(cloud.getProjectId(), filterLabel)
